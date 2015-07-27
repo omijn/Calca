@@ -1,0 +1,24 @@
+Possible syntax errors (by user)
+- expressions starting with operators (+, -, /, *, =)
+
+- multiple operators appearing together
+
+- handling multiple decimal points in a number
+
+
+
+NOTE - remember to handle negative numbers
+
+
+
+Other special conditions
+- after result of operation is displayed, if another number/decimal is pressed -> clear TextView
+					else if operator -> append 
+
+- if only decimal point is pressed, and then another number, consider it as 0.number
+
+- if = sign is pressed -> do nothing/ display number itself
+
+- if two operators appear consecutively, don't accept the second operator (unless it's -/.)
+
+- keep 0s at the beginning of a number (AND extra 0s at the end of a decimal point)
