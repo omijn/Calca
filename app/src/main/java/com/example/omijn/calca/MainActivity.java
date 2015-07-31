@@ -120,6 +120,7 @@ public class MainActivity extends ActionBarActivity {
                 break;
 
             case R.id.button_equal:
+                displayButtonValue("=");
                 //equal();
                 break;
         }
