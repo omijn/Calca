@@ -50,9 +50,9 @@ public class MainActivity extends ActionBarActivity {
 
         //put numeric value to screen
         else
-                mtv.setText(mtv.getText() + identifier);
+            mtv.setText(mtv.getText() + identifier);
 
-        }
+    }
 
     public void passToTextView(View view) {
         switch (view.getId()) {
@@ -120,11 +120,24 @@ public class MainActivity extends ActionBarActivity {
                 break;
 
             case R.id.button_equal:
-                displayButtonValue("=");
+                parseEquation();
                 //equal();
                 break;
         }
     }
+//LOGIC TO BE IMPLEMENTED
+    private void parseEquation() {
+        TextView tv = (TextView) findViewById(R.id.mathTextView);
+        char[] equation = tv.getText().toString().toCharArray();
+        StringBuilder x = new StringBuilder();
+
+        for (int i = 0; i < tv.length(); ++i) {
+           if(Character.isDigit(equation[i])){
+
+           }
+        }
+    }
+
 
     /////////////////////////////////////////////////////////////////////////
 //////////////////////////////OPERATOR-MODULES///////////////////////////
