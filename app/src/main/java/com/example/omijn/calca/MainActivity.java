@@ -7,6 +7,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import java.util.LinkedList;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -36,19 +37,6 @@ public class MainActivity extends ActionBarActivity {
                 mtv.setText(newText);
             }
         }
-
-        /*addition
-        else if (value == -3) {
-
-            //convert string to long
-            num = Long.parseLong(mtv.getText().toString());
-
-
-            //convert long to string
-            mtv.setText(Long.toString(num));
-        }*/
-
-        //put numeric value to screen
         else
             mtv.setText(mtv.getText() + identifier);
 
@@ -125,54 +113,40 @@ public class MainActivity extends ActionBarActivity {
                 break;
         }
     }
-//LOGIC TO BE IMPLEMENTED
+
+    //LOGIC TO BE IMPLEMENTED
     private void parseEquation() {
         TextView tv = (TextView) findViewById(R.id.mathTextView);
-        char[] equation = tv.getText().toString().toCharArray();
-        StringBuilder x = new StringBuilder();
+        String equation = tv.getText().toString();
 
-        for (int i = 0; i < tv.length(); ++i) {
-           if(Character.isDigit(equation[i])){
+        //Operand Array (String format)
+        String[] operandArray = equation.split("\\*|\\/|\\-|\\+");
 
-           }
-        }
-    }
+        //Operator Array (String format)
+        String[] operatorArray = new String[10];
 
+        int operatorArrayCounter = 0;
 
-    /////////////////////////////////////////////////////////////////////////
-//////////////////////////////OPERATOR-MODULES///////////////////////////
-/////////////////////////////////////////////////////////////////////////
-    /*private void add() {
+        //Get Operator Array
+        for (int j = 0; j < equation.length(); j++) {
 
-        /*Update edit text
-                mtv.setText(newText);
+            switch (equation.charAt(j)) {
+                case '+':
+                case '-':
+                case '*':
+                case '/':
+                    operatorArray[operatorArrayCounter++] = Character.toString(equation.charAt(j));
             }
-    }*/
+        }
+        
+        /*Long[] numericArray = new Long[stringArray.length];
 
+        for (int i = 0; i < stringArray.length; ++i) {
+            numericArray[i] = Long.parseLong(stringArray[i]);
+        }
+        */
 
-/////////////////////////////////////////////////////////////////////////
-
-
-
-    /*@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }*/
 }
