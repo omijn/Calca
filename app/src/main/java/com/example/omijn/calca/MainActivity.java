@@ -8,8 +8,11 @@ import android.view.View;
 import android.widget.TextView;
 
 import java.util.LinkedList;
+import java.util.Stack;
 
 public class MainActivity extends ActionBarActivity {
+
+    int top = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,12 +126,12 @@ public class MainActivity extends ActionBarActivity {
         String[] operandArray = equation.split("\\*|\\/|\\-|\\+");
 
         //Operator Array (String format)
-        String[] operatorArray = new String[10];
+        String[] operatorArray = new String[operandArray.length - 1];
 
-        int operatorArrayCounter = 0;
+        int operatorArrayCounter = 0, j = 0;
 
         //Get Operator Array
-        for (int j = 0; j < equation.length(); j++) {
+        for (j = 0; j < equation.length(); ++j) {
 
             switch (equation.charAt(j)) {
                 case '+':
@@ -138,7 +141,31 @@ public class MainActivity extends ActionBarActivity {
                     operatorArray[operatorArrayCounter++] = Character.toString(equation.charAt(j));
             }
         }
-        
+
+        j = 0;
+
+        String[] postfix = new String[operandArray.length + operatorArray.length];
+
+        String[] operatorStack = new String[operatorArray.length];
+        int postfixCounter = 0;
+        operatorStack[top] = "";
+
+
+        for(j = 0; j < operandArray.length; ++j) {
+            postfix[postfixCounter++] = operandArray[j];
+
+            while(precedence(operatorArray[j]) <= precedence(operatorStack[top])) {
+                postfix[postfixCounter++] = pop(operatorStack, top);
+            }
+
+            push(operatorStack, operatorArray[j], top);
+        }
+
+        for(j = 0; j < postfix.length; ++j) {
+            tv.setText(tv.getText().toString() + postfix[j]);
+        }
+
+
         /*Long[] numericArray = new Long[stringArray.length];
 
         for (int i = 0; i < stringArray.length; ++i) {
@@ -148,5 +175,35 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
+    private void push(String[] stack, String item, int top) {
+        stack[top++] = item;
+
+    }
+
+    private String pop(String[] stack, int top) {
+        return stack[top--];
+    }
+
+    private int precedence(String operator) {
+        if(operator.equals("+") || operator.equals("-"))
+            return 2;
+        else if(operator.equals("*") || operator.equals("/"))
+            return 3;
+        else
+            return 0;
+
+//        switch(operator) {
+//            case "*":
+//            case "/":
+//                return 3;
+//
+//            case "+":
+//            case "-":
+//                return 2;
+//
+//            default:
+//                return 0;
+//        }
+    }
 
 }
