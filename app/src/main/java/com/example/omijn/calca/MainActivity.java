@@ -12,7 +12,7 @@ import java.util.Stack;
 
 public class MainActivity extends ActionBarActivity {
 
-    int top = 0;
+    int top = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,8 +39,7 @@ public class MainActivity extends ActionBarActivity {
                 String newText = currentText.substring(0, currentText.length() - 1);
                 mtv.setText(newText);
             }
-        }
-        else
+        } else
             mtv.setText(mtv.getText() + identifier);
 
     }
@@ -148,20 +147,41 @@ public class MainActivity extends ActionBarActivity {
 
         String[] operatorStack = new String[operatorArray.length];
         int postfixCounter = 0;
-        operatorStack[top] = "";
+        operatorStack[top+1] = "";
 
-
-        for(j = 0; j < operandArray.length; ++j) {
+        /////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////  RESOLVED CODE //////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////
+        ///////// REMOVE COMMENTS IF NEEDED AND PUSH LATEST COMMIT///////////////////
+        /////////////////////////////////////////////////////////////////////////////
+        //Deadly Function For Infix To Postfix
+        //NOTE: Previous Errors indicated in CAPS
+        for (j = 0; j <= operandArray.length; ++j) {
+            //J VALUE DUE TO LESS RANGE SPECIFIED, MISSED PUSHING INTO STACK THE LAST OPERAND
             postfix[postfixCounter++] = operandArray[j];
 
-            while(precedence(operatorArray[j]) <= precedence(operatorStack[top])) {
-                postfix[postfixCounter++] = pop(operatorStack, top);
+            //CRASHED DUE TO IMPROPER MAINTENANCE OF TOP
+            if (top != -1) {
+                if(j==operatorArray.length) {
+                    //PUSHING OPERATORS IF REQUIRED AT THE END OF THE INFIX EXPRESSION
+                    while(top!=-1)
+                        postfix[postfixCounter++] = pop(operatorStack);
+                    //BREAK FROM THE LOOP
+                    break;
+                }
+
+                while (precedence(operatorArray[j]) <= precedence(operatorStack[top])) {
+                    postfix[postfixCounter++] = pop(operatorStack);
+                }
             }
 
-            push(operatorStack, operatorArray[j], top);
+            push(operatorStack, operatorArray[j]);
         }
 
-        for(j = 0; j < postfix.length; ++j) {
+        //TESTING THROUGH TEXT VIEW
+        //DID NOT CLEAR THE TEXT BEFORE SHOWING POSTFIX EXPRESSION
+        tv.setText("");
+        for (j = 0; j < postfix.length; ++j) {
             tv.setText(tv.getText().toString() + postfix[j]);
         }
 
@@ -175,19 +195,21 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
-    private void push(String[] stack, String item, int top) {
-        stack[top++] = item;
-
+    //CALL BY REFERENCE EARLIER, DID NOT AFFECT THE TOP PASSED BY PARAMETER
+    private void push(String[] stack, String item) {
+        stack[++top] = item;
     }
 
-    private String pop(String[] stack, int top) {
+    //CALL BY REFERENCE EARLIER, DID NOT AFFECT THE TOP PASSED BY PARAMETER
+    private String pop(String[] stack) {
         return stack[top--];
     }
 
+    /////////////////////////////END OF SOLUTION///////////////////////////
     private int precedence(String operator) {
-        if(operator.equals("+") || operator.equals("-"))
+        if (operator.equals("+") || operator.equals("-"))
             return 2;
-        else if(operator.equals("*") || operator.equals("/"))
+        else if (operator.equals("*") || operator.equals("/"))
             return 3;
         else
             return 0;
