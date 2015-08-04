@@ -22,8 +22,6 @@ public class MainActivity extends ActionBarActivity {
 
     private void displayButtonValue(String identifier) {
 
-        long num;
-
         TextView mtv = (TextView) findViewById(R.id.mathTextView);
 
         //clear
@@ -35,17 +33,22 @@ public class MainActivity extends ActionBarActivity {
             String currentText = mtv.getText().toString();
 
             if (currentText.length() > 0) {
-                //Remove last character//
+                //Remove last character
                 String newText = currentText.substring(0, currentText.length() - 1);
                 mtv.setText(newText);
             }
-        } else
+        }
+
+        //display a character
+        else
             mtv.setText(mtv.getText() + identifier);
 
     }
 
     public void passToTextView(View view) {
+
         switch (view.getId()) {
+            /*numeric*/
             case R.id.button_0:
                 displayButtonValue("0");
                 break;
@@ -76,7 +79,11 @@ public class MainActivity extends ActionBarActivity {
             case R.id.button_9:
                 displayButtonValue("9");
                 break;
+            case R.id.button_decimal:
+                displayButtonValue(".");
+                break;
 
+            /*clear and backspace*/
             case R.id.clear_button:
                 displayButtonValue("clear");
                 break;
@@ -84,52 +91,41 @@ public class MainActivity extends ActionBarActivity {
                 displayButtonValue("backspace");
                 break;
 
+            /*operations*/
             case R.id.button_add:
                 displayButtonValue("+");
-                //add();
                 break;
-
             case R.id.button_subtract:
                 displayButtonValue("-");
-                //add();
                 break;
-
             case R.id.button_multiply:
                 displayButtonValue("*");
-                //add();
                 break;
-
             case R.id.button_divide:
                 displayButtonValue("/");
-                //add();
                 break;
 
-            case R.id.button_decimal:
-                displayButtonValue(".");
-                //add();
-                break;
-
+            /*special*/
             case R.id.button_equal:
                 parseEquation();
-                //equal();
                 break;
         }
     }
 
-    //LOGIC TO BE IMPLEMENTED
+
     private void parseEquation() {
         TextView tv = (TextView) findViewById(R.id.mathTextView);
         String equation = tv.getText().toString();
 
-        //Operand Array (String format)
+        //Split the equation at operators to get operands, store them in operand array (string format)
         String[] operandArray = equation.split("\\*|\\/|\\-|\\+");
 
-        //Operator Array (String format)
+        //Operator array (String format)
         String[] operatorArray = new String[operandArray.length - 1];
 
         int operatorArrayCounter = 0, j = 0;
 
-        //Get Operator Array
+        //Get operator array by scanning equation from L2R. If operator is encountered, add it to the operator array
         for (j = 0; j < equation.length(); ++j) {
 
             switch (equation.charAt(j)) {
@@ -144,33 +140,27 @@ public class MainActivity extends ActionBarActivity {
         j = 0;
 
         String[] postfix = new String[operandArray.length + operatorArray.length];
+        int postfixCounter = 0;
 
         String[] operatorStack = new String[operatorArray.length];
-        int postfixCounter = 0;
-        operatorStack[top+1] = "";
+        operatorStack[0] = "";
 
-        /////////////////////////////////////////////////////////////////////////////
-        ///////////////////////////  RESOLVED CODE //////////////////////////////////
-        /////////////////////////////////////////////////////////////////////////////
-        ///////// REMOVE COMMENTS IF NEEDED AND PUSH LATEST COMMIT///////////////////
-        /////////////////////////////////////////////////////////////////////////////
+
         //Deadly Function For Infix To Postfix
-        //NOTE: Previous Errors indicated in CAPS
         for (j = 0; j <= operandArray.length; ++j) {
             //J VALUE DUE TO LESS RANGE SPECIFIED, MISSED PUSHING INTO STACK THE LAST OPERAND
             postfix[postfixCounter++] = operandArray[j];
 
-            //CRASHED DUE TO IMPROPER MAINTENANCE OF TOP
             if (top != -1) {
-                if(j==operatorArray.length) {
+
+                if (j == operatorArray.length) {
                     //PUSHING OPERATORS IF REQUIRED AT THE END OF THE INFIX EXPRESSION
-                    while(top!=-1)
+                    while (top != -1)
                         postfix[postfixCounter++] = pop(operatorStack);
-                    //BREAK FROM THE LOOP
                     break;
                 }
-                //STACK SHOULD NOT BE EMPTY CONDITION HAD TO BE CHECKED
-                while ((top!=-1) && (precedence(operatorArray[j]) <= precedence(operatorStack[top]))) {
+
+                while ((top != -1) && (precedence(operatorArray[j]) <= precedence(operatorStack[top]))) {
                     postfix[postfixCounter++] = pop(operatorStack);
                 }
             }
@@ -178,8 +168,7 @@ public class MainActivity extends ActionBarActivity {
             push(operatorStack, operatorArray[j]);
         }
 
-        //TESTING THROUGH TEXT VIEW
-        //DID NOT CLEAR THE TEXT BEFORE SHOWING POSTFIX EXPRESSION
+
         tv.setText("");
         for (j = 0; j < postfix.length; ++j) {
             tv.setText(tv.getText().toString() + postfix[j]);
@@ -195,37 +184,27 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
-    //CALL BY REFERENCE EARLIER, DID NOT AFFECT THE TOP PASSED BY PARAMETER
     private void push(String[] stack, String item) {
         stack[++top] = item;
     }
 
-    //CALL BY REFERENCE EARLIER, DID NOT AFFECT THE TOP PASSED BY PARAMETER
     private String pop(String[] stack) {
         return stack[top--];
     }
 
-    /////////////////////////////END OF SOLUTION///////////////////////////
     private int precedence(String operator) {
-        if (operator.equals("+") || operator.equals("-"))
-            return 2;
-        else if (operator.equals("*") || operator.equals("/"))
-            return 3;
-        else
-            return 0;
+        switch (operator) {
+            case "*":
+            case "/":
+                return 3;
 
-//        switch(operator) {
-//            case "*":
-//            case "/":
-//                return 3;
-//
-//            case "+":
-//            case "-":
-//                return 2;
-//
-//            default:
-//                return 0;
-//        }
+            case "+":
+            case "-":
+                return 2;
+
+            default:
+                return 0;
+        }
     }
 
 }
