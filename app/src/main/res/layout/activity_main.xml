@@ -7,9 +7,11 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:id="@+id/mathTextView"
-        android:textSize="48sp"
-        android:paddingTop="20dp"
+        android:textSize="44sp"
+        android:paddingTop="15dp"
         android:paddingLeft="10dp"
+        android:textColor="#111"
+        android:letterSpacing="0.1"
         />
 
     <LinearLayout
@@ -26,7 +28,8 @@
             android:text="1"
             android:textSize="30sp"
             android:background="#ccc"
-            android:onClick="passToTextView"/>
+            android:onClick="passToTextView"
+            />
 
         <Button
             android:id="@+id/button_2"
@@ -102,8 +105,8 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="*"
-            android:textSize="30sp"
+            android:text="x"
+            android:textSize="18sp"
             android:background="#333333"
             android:textColor="#fff"
             android:onClick="passToTextView"/>
