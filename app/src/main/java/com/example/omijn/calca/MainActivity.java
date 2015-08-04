@@ -12,7 +12,7 @@ import java.util.Stack;
 
 public class MainActivity extends ActionBarActivity {
 
-    int top = -1;
+    int top = -1, operatorCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,8 +40,24 @@ public class MainActivity extends ActionBarActivity {
         }
 
         //display a character
-        else
-            mtv.setText(mtv.getText() + identifier);
+        else {
+
+            //Error handling - Forbid multiple consecutive operators
+            switch (identifier) {
+                case "+":
+                case "x":
+                case "-":
+                case "/":
+                    operatorCount++;
+                    break;
+
+                default:
+                    operatorCount = 0;
+            }
+            if (operatorCount <= 1) {
+                mtv.setText(mtv.getText() + identifier);
+            }
+        }
 
     }
 
@@ -169,19 +185,13 @@ public class MainActivity extends ActionBarActivity {
         }
 
 
-//        tv.setText("");
-//        for (j = 0; j < postfix.length; ++j) {
-//            tv.setText(tv.getText().toString() + postfix[j]);
-//        }
-
-
         //Evaluation of postfix expression
         Double operand1, operand2;
         double[] evaluationStack = new double[operandArray.length];
         int evaluationStackTop = -1;
 
-        for(j = 0; j < postfix.length; ++j) {
-            switch(postfix[j]) {
+        for (j = 0; j < postfix.length; ++j) {
+            switch (postfix[j]) {
                 case "x":
                     operand2 = evaluationStack[evaluationStackTop--];
                     operand1 = evaluationStack[evaluationStackTop];
@@ -207,19 +217,17 @@ public class MainActivity extends ActionBarActivity {
                     break;
 
                 default:
-                    evaluationStack[++evaluationStackTop]= Double.parseDouble(postfix[j]);
+                    evaluationStack[++evaluationStackTop] = Double.parseDouble(postfix[j]);
 
             }
         }
 
         //Result
-            //tv.setText("");
-            if((long)evaluationStack[evaluationStackTop]==evaluationStack[evaluationStackTop]) {
-                tv.setText(Long.toString((long)evaluationStack[evaluationStackTop]));
-            }
-            else {
-                tv.setText(Double.toString(evaluationStack[evaluationStackTop]));
-            }
+        if ((long) evaluationStack[evaluationStackTop] == evaluationStack[evaluationStackTop]) {
+            tv.setText(Long.toString((long) evaluationStack[evaluationStackTop]));
+        } else {
+            tv.setText(Double.toString(evaluationStack[evaluationStackTop]));
+        }
 
     }
 
