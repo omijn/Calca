@@ -169,8 +169,8 @@ public class MainActivity extends ActionBarActivity {
                     //BREAK FROM THE LOOP
                     break;
                 }
-
-                while (precedence(operatorArray[j]) <= precedence(operatorStack[top])) {
+                //STACK SHOULD NOT BE EMPTY CONDITION HAD TO BE CHECKED
+                while ((top!=-1) && (precedence(operatorArray[j]) <= precedence(operatorStack[top]))) {
                     postfix[postfixCounter++] = pop(operatorStack);
                 }
             }
