@@ -11,7 +11,6 @@
         android:paddingTop="15dp"
         android:paddingLeft="10dp"
         android:textColor="#111"
-        android:letterSpacing="0.1"
         />
 
     <LinearLayout

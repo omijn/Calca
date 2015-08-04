@@ -99,7 +99,7 @@ public class MainActivity extends ActionBarActivity {
                 displayButtonValue("-");
                 break;
             case R.id.button_multiply:
-                displayButtonValue("*");
+                displayButtonValue("x");
                 break;
             case R.id.button_divide:
                 displayButtonValue("/");
@@ -118,7 +118,7 @@ public class MainActivity extends ActionBarActivity {
         String equation = tv.getText().toString();
 
         //Split the equation at operators to get operands, store them in operand array (string format)
-        String[] operandArray = equation.split("\\*|\\/|\\-|\\+");
+        String[] operandArray = equation.split("x|\\/|\\-|\\+");
 
         //Operator array (String format)
         String[] operatorArray = new String[operandArray.length - 1];
@@ -131,7 +131,7 @@ public class MainActivity extends ActionBarActivity {
             switch (equation.charAt(j)) {
                 case '+':
                 case '-':
-                case '*':
+                case 'x':
                 case '/':
                     operatorArray[operatorArrayCounter++] = Character.toString(equation.charAt(j));
             }
@@ -147,7 +147,7 @@ public class MainActivity extends ActionBarActivity {
 
 
         //Deadly Function For Infix To Postfix
-        for (j = 0; j <= operandArray.length; ++j) {
+        for (j = 0; j < operandArray.length; ++j) {
             //J VALUE DUE TO LESS RANGE SPECIFIED, MISSED PUSHING INTO STACK THE LAST OPERAND
             postfix[postfixCounter++] = operandArray[j];
 
@@ -169,18 +169,57 @@ public class MainActivity extends ActionBarActivity {
         }
 
 
-        tv.setText("");
-        for (j = 0; j < postfix.length; ++j) {
-            tv.setText(tv.getText().toString() + postfix[j]);
+//        tv.setText("");
+//        for (j = 0; j < postfix.length; ++j) {
+//            tv.setText(tv.getText().toString() + postfix[j]);
+//        }
+
+
+        //Evaluation of postfix expression
+        Double operand1, operand2;
+        double[] evaluationStack = new double[operandArray.length];
+        int evaluationStackTop = -1;
+
+        for(j = 0; j < postfix.length; ++j) {
+            switch(postfix[j]) {
+                case "x":
+                    operand2 = evaluationStack[evaluationStackTop--];
+                    operand1 = evaluationStack[evaluationStackTop];
+                    evaluationStack[evaluationStackTop] = operand1 * operand2;
+                    break;
+
+                case "/":
+                    operand2 = evaluationStack[evaluationStackTop--];
+                    operand1 = evaluationStack[evaluationStackTop];
+                    evaluationStack[evaluationStackTop] = operand1 / operand2;
+                    break;
+
+                case "+":
+                    operand2 = evaluationStack[evaluationStackTop--];
+                    operand1 = evaluationStack[evaluationStackTop];
+                    evaluationStack[evaluationStackTop] = operand1 + operand2;
+                    break;
+
+                case "-":
+                    operand2 = evaluationStack[evaluationStackTop--];
+                    operand1 = evaluationStack[evaluationStackTop];
+                    evaluationStack[evaluationStackTop] = operand1 - operand2;
+                    break;
+
+                default:
+                    evaluationStack[++evaluationStackTop]= Double.parseDouble(postfix[j]);
+
+            }
         }
 
-
-        /*Long[] numericArray = new Long[stringArray.length];
-
-        for (int i = 0; i < stringArray.length; ++i) {
-            numericArray[i] = Long.parseLong(stringArray[i]);
-        }
-        */
+        //Result
+            //tv.setText("");
+            if((long)evaluationStack[evaluationStackTop]==evaluationStack[evaluationStackTop]) {
+                tv.setText(Long.toString((long)evaluationStack[evaluationStackTop]));
+            }
+            else {
+                tv.setText(Double.toString(evaluationStack[evaluationStackTop]));
+            }
 
     }
 
@@ -194,7 +233,7 @@ public class MainActivity extends ActionBarActivity {
 
     private int precedence(String operator) {
         switch (operator) {
-            case "*":
+            case "x":
             case "/":
                 return 3;
 
