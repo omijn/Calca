@@ -2,6 +2,7 @@ package com.example.omijn.calca;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -10,9 +11,10 @@ import android.widget.TextView;
 import java.util.LinkedList;
 import java.util.Stack;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends AppCompatActivity {
 
-    int top = -1, operatorCount = 0;
+    int top = -1, operatorCount = 0, decimalPointCount = 0;
+    boolean equalsAllowed = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,12 +27,34 @@ public class MainActivity extends ActionBarActivity {
         TextView mtv = (TextView) findViewById(R.id.mathTextView);
 
         //clear
-        if (identifier.equals("clear"))
+        if (identifier.equals("clear")) {
             mtv.setText("");
+            decimalPointCount = 0;
+            operatorCount = 0;
+        }
 
-            //backspace
+
+        //backspace
         else if (identifier.equals("backspace")) {
+            operatorCount = 0;
             String currentText = mtv.getText().toString();
+
+            //reset count of decimal points if we're backspacing a '.'
+            char lastCharacter = 'c';
+
+            if(currentText.length() > 0) {
+                lastCharacter = currentText.charAt(currentText.length() - 1);
+                mtv.setText(mtv.getText().toString() + Character.toString(lastCharacter));
+            }
+
+
+
+            if (lastCharacter == '.')
+                decimalPointCount = 0;
+
+            if(lastCharacter == 'y' || lastCharacter == 'N')
+                mtv.setText("");
+                //displayButtonValue("clear");
 
             if (currentText.length() > 0) {
                 //Remove last character
@@ -49,14 +73,27 @@ public class MainActivity extends ActionBarActivity {
                 case "-":
                 case "/":
                     operatorCount++;
+                    decimalPointCount = 0;
+                    break;
+
+                case ".":
+                    decimalPointCount++;
+                    //operatorCount++;
                     break;
 
                 default:
                     operatorCount = 0;
             }
-            if (operatorCount <= 1) {
+
+            if (decimalPointCount <= 1 && identifier == ".") {
+                mtv.setText(mtv.getText() + identifier);
+                return;
+            }
+
+            if (operatorCount <= 1 && identifier != ".") {
                 mtv.setText(mtv.getText() + identifier);
             }
+
         }
 
     }
@@ -126,6 +163,7 @@ public class MainActivity extends ActionBarActivity {
                 parseEquation();
                 break;
         }
+
     }
 
 
@@ -227,6 +265,13 @@ public class MainActivity extends ActionBarActivity {
             tv.setText(Long.toString((long) evaluationStack[evaluationStackTop]));
         } else {
             tv.setText(Double.toString(evaluationStack[evaluationStackTop]));
+        }
+
+        for (int i = 0; i < tv.length(); ++i) {
+            if (tv.getText().charAt(i) == '.'){
+                decimalPointCount++;
+            }
+
         }
 
     }
