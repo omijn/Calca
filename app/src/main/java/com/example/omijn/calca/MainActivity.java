@@ -52,9 +52,12 @@ public class MainActivity extends AppCompatActivity {
             if (lastCharacter == '.')
                 decimalPointCount = 0;
 
-            if(lastCharacter == 'y' || lastCharacter == 'N')
-                mtv.setText("");
-                //displayButtonValue("clear");
+            if(lastCharacter == 'y' || lastCharacter == 'd') {
+                //mtv.setText("");
+                displayButtonValue("clear");
+                //Avoid resetting text again in the next if
+                return;
+            }
 
             if (currentText.length() > 0) {
                 //Remove last character
@@ -73,6 +76,8 @@ public class MainActivity extends AppCompatActivity {
                 case "-":
                 case "/":
                     operatorCount++;
+                    //To Avoid 9.+.. error
+                    //if(mtv.getText().toString().charAt(mtv.length()-1) != '.')
                     decimalPointCount = 0;
                     break;
 
@@ -171,6 +176,56 @@ public class MainActivity extends AppCompatActivity {
         TextView tv = (TextView) findViewById(R.id.mathTextView);
         String equation = tv.getText().toString();
 
+        //Equal Operator Error Handler Code
+        int equalOperatorErrorCounter=0;
+        if(equation.equals("")) {
+            return;
+        }
+        for(int j = 0; j<equation.length(); ++j) {
+            switch (equation.charAt(j)) {
+                case 'x':
+                case '/':
+                case '+':
+                case '-':
+                if(j==equation.length()-1) {
+                    displayButtonValue("clear");
+                    return;
+
+                }
+                    break;
+                case '.':
+                if((j==0 && equation.charAt(1)=='\0') || ((j==equation.length()-1))) {
+                    if(j==equation.length()-1){
+                        switch (equation.charAt(equation.length()-2)) {
+                            case '1': case '2': case '3': case '4': case '5': case '6':
+                            case '7': case '8': case '9': case '0':
+                                continue;
+                        }
+                    }
+                    displayButtonValue("clear");
+                    return;
+                }
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9':
+                case '0':
+                ++equalOperatorErrorCounter;
+                if(j==equation.length()-1 && equalOperatorErrorCounter==equation.length()) {
+                    displayButtonValue("clear");
+                    return;
+                }
+
+
+            }
+
+        }
+
         //Split the equation at operators to get operands, store them in operand array (string format)
         String[] operandArray = equation.split("x|\\/|\\-|\\+");
 
@@ -267,6 +322,10 @@ public class MainActivity extends AppCompatActivity {
             tv.setText(Double.toString(evaluationStack[evaluationStackTop]));
         }
 
+        //Divide by zero error = Undefined
+        if (tv.getText().toString().equals("NaN")) {
+            tv.setText("Undefined");
+        }
         for (int i = 0; i < tv.length(); ++i) {
             if (tv.getText().charAt(i) == '.'){
                 decimalPointCount++;
