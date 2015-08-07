@@ -75,9 +75,13 @@ public class MainActivity extends AppCompatActivity {
                 case "x":
                 case "-":
                 case "/":
+                    //Avoid initial operator problem
+                    if(mtv.getText().toString().equals(""))
+                        return;
                     operatorCount++;
                     //To Avoid 9.+.. error
                     //if(mtv.getText().toString().charAt(mtv.length()-1) != '.')
+                    if(operatorCount<=1)
                     decimalPointCount = 0;
                     break;
 
