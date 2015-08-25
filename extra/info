@@ -22,3 +22,9 @@ Other special conditions
 - if two operators appear consecutively, don't accept the second operator (unless it's -/.)
 
 - keep 0s at the beginning of a number (AND extra 0s at the end of a decimal point)
+
+
+BUG LOG
+--------
+
+-> 
