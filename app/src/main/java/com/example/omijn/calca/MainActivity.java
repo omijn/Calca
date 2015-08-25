@@ -2,19 +2,30 @@ package com.example.omijn.calca;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import java.util.LinkedList;
-import java.util.Stack;
+import java.util.Arrays;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends ActionBarActivity {
 
-    int top = -1, operatorCount = 0, decimalPointCount = 0;
-    boolean equalsAllowed = true;
+    int top = -1;
+    boolean[] flags = {false, false, false, false, false};
+
+    /* FLAG FORMAT
+    *
+    *  flags[0] -> dotAllowed
+    *  flags[1] -> equalsAllowed
+    *  flags[2] -> minusAllowed
+    *  flags[3] -> numericAllowed
+    *  flags[4] -> operatorAllowed
+    *
+    * */
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,40 +33,47 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
     }
 
+
+    private void rulebook(char lastCharacter) {
+        Arrays.fill(flags, false);
+
+        switch(lastCharacter) {
+            case '\0':
+
+                /*minus and numeric*/
+                flags[2] = flags[3] = true;
+                break;
+            case '.':
+
+                /*numeric*/
+                flags[3] = true;
+                break;
+
+            case '*':
+            case '/':
+            case '+':
+                /*dot, minus and numeric*/
+                flags[0] = flags[2] = flags[3] = true;
+                break;
+
+            default: //numeric
+                /*set all flags*/
+                Arrays.fill(flags, true);
+        }
+    }
+
     private void displayButtonValue(String identifier) {
 
+        boolean print = false;
         TextView mtv = (TextView) findViewById(R.id.mathTextView);
 
         //clear
-        if (identifier.equals("clear")) {
+        if (identifier.equals("clear"))
             mtv.setText("");
-            decimalPointCount = 0;
-            operatorCount = 0;
-        }
 
-
-        //backspace
+            //backspace
         else if (identifier.equals("backspace")) {
-            operatorCount = 0;
             String currentText = mtv.getText().toString();
-
-            //reset count of decimal points if we're backspacing a '.'
-            char lastCharacter = 'c';
-
-            if (currentText.length() > 0) {
-                lastCharacter = currentText.charAt(currentText.length() - 1);
-                mtv.setText(mtv.getText().toString() + Character.toString(lastCharacter));
-            }
-
-             if (lastCharacter == '.')
-                decimalPointCount = 0;
-
-            if (lastCharacter == 'y' || lastCharacter == 'd') {
-                //mtv.setText("");
-                displayButtonValue("clear");
-                //Avoid resetting text again in the next if
-                return;
-            }
 
             if (currentText.length() > 0) {
                 //Remove last character
@@ -66,42 +84,49 @@ public class MainActivity extends AppCompatActivity {
 
         //display a character
         else {
+            print = false;
 
-            //Error handling - Forbid multiple consecutive operators
-            switch (identifier) {
-                case "+":
-                case "x":
-                case "-":
+            //update flags based on awesome rules
+            char lastCharacter;
+
+            if(mtv.toString().charAt(mtv.toString().length()) == 0)
+                lastCharacter = '\0';
+            else
+                lastCharacter = mtv.toString().charAt(mtv.toString().length());
+
+            rulebook(lastCharacter);
+
+            switch(identifier) {
+                case "*":
                 case "/":
-                    //Avoid initial operator problem
-                    if (mtv.getText().toString().equals(""))
-                        return;
-                    operatorCount++;
-                    //To Avoid 9.+.. error
-                    //if(mtv.getText().toString().charAt(mtv.length()-1) != '.')
-                    if (operatorCount <= 1)
-                        decimalPointCount = 0;
+                case "+":
+                    /*if operator flag is set, allow printing of operators*/
+                    if(flags[4])
+                        print = true;
                     break;
 
                 case ".":
-                    decimalPointCount++;
-                    //operatorCount++;
+                    /*if dot flag is set, allow printing of .*/
+                    if(flags[0])
+                        print = true;
+                    break;
+
+                case "-":
+                    /*if minus flag is set, allow printing of -*/
+                    if(flags[2])
+                        print = true;
                     break;
 
                 default:
-                    operatorCount = 0;
+                    /*if numeric flag is set, allow printing of numbers*/
+                    if(flags[3])
+                        print = true;
             }
 
-            if (decimalPointCount <= 1 && identifier == ".") {
+            if(print == true)
                 mtv.setText(mtv.getText() + identifier);
-                return;
-            }
-
-            if (operatorCount <= 1 && identifier != ".") {
-                mtv.setText(mtv.getText() + identifier);
-            }
-
         }
+
 
     }
 
@@ -167,10 +192,13 @@ public class MainActivity extends AppCompatActivity {
 
             /*special*/
             case R.id.button_equal:
-                parseEquation();
+                displayButtonValue("=");
+                if(flags[1])
+                    parseEquation();
+
+                /*else do nothing*/
                 break;
         }
-
     }
 
 
@@ -230,13 +258,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
+
         //Evaluation of postfix expression
         Double operand1, operand2;
         double[] evaluationStack = new double[operandArray.length];
         int evaluationStackTop = -1;
 
-        for (j = 0; j < postfix.length; ++j) {
-            switch (postfix[j]) {
+        for(j = 0; j < postfix.length; ++j) {
+            switch(postfix[j]) {
                 case "x":
                     operand2 = evaluationStack[evaluationStackTop--];
                     operand1 = evaluationStack[evaluationStackTop];
@@ -262,27 +291,18 @@ public class MainActivity extends AppCompatActivity {
                     break;
 
                 default:
-                    evaluationStack[++evaluationStackTop] = Double.parseDouble(postfix[j]);
+                    evaluationStack[++evaluationStackTop]= Double.parseDouble(postfix[j]);
 
             }
         }
 
         //Result
-        if ((long) evaluationStack[evaluationStackTop] == evaluationStack[evaluationStackTop]) {
-            tv.setText(Long.toString((long) evaluationStack[evaluationStackTop]));
-        } else {
+        //tv.setText("");
+        if((long)evaluationStack[evaluationStackTop]==evaluationStack[evaluationStackTop]) {
+            tv.setText(Long.toString((long)evaluationStack[evaluationStackTop]));
+        }
+        else {
             tv.setText(Double.toString(evaluationStack[evaluationStackTop]));
-        }
-
-        //Divide by zero error = Undefined
-        if (tv.getText().toString().equals("NaN")) {
-            tv.setText("Undefined");
-        }
-        for (int i = 0; i < tv.length(); ++i) {
-            if (tv.getText().charAt(i) == '.') {
-                decimalPointCount++;
-            }
-
         }
 
     }
