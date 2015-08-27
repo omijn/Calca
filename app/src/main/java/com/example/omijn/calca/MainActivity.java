@@ -119,7 +119,7 @@ public class MainActivity extends ActionBarActivity {
 
                 default:
                     /*if numeric flag is set, allow printing of numbers*/
-                    if(flags[3])
+                    if(flags[3] && Character.isDigit(identifier.charAt(0)))
                         print = true;
             }
 
