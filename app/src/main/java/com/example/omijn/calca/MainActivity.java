@@ -89,15 +89,15 @@ public class MainActivity extends ActionBarActivity {
             //update flags based on awesome rules
             char lastCharacter;
 
-            if(mtv.toString().charAt(mtv.toString().length()) == 0)
+            if(mtv.getText().toString().length() == 0)
                 lastCharacter = '\0';
             else
-                lastCharacter = mtv.toString().charAt(mtv.toString().length());
+                lastCharacter = mtv.getText().toString().charAt(mtv.getText().toString().length()-1);
 
             rulebook(lastCharacter);
 
             switch(identifier) {
-                case "*":
+                case "x":
                 case "/":
                 case "+":
                     /*if operator flag is set, allow printing of operators*/
@@ -124,7 +124,7 @@ public class MainActivity extends ActionBarActivity {
             }
 
             if(print == true)
-                mtv.setText(mtv.getText() + identifier);
+                mtv.setText(mtv.getText().toString() + identifier);
         }
 
 
